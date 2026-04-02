@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Чекліст перевірки дизайну — ПМ</title>
+<link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: 'Montserrat', sans-serif; font-size: 12px; background: #f5f5f3; color: #1a1a18; min-height: 100vh; }
+  .sticky { position: sticky; top: 0; z-index: 100; background: rgba(245,245,243,0.95); backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px); border-bottom: 0.5px solid #e0dfd8; padding: 10px 1rem; }
+  .sticky-inner { max-width: 680px; margin: 0 auto; display: flex; align-items: center; gap: 14px; }
+  .score-num { font-size: 17px; font-weight: 600; color: #1a1a18; line-height: 1; }
+  .score-sub { font-size: 10px; color: #888780; margin-top: 2px; display: flex; align-items: center; gap: 5px; }
+  .verdict { font-size: 9px; font-weight: 600; padding: 2px 7px; border-radius: 99px; }
+  .prog { flex: 1; background: #e8e8e5; border-radius: 99px; height: 5px; overflow: hidden; min-width: 40px; }
+  .prog-fill { height: 100%; border-radius: 99px; background: #1D9E75; transition: width .3s; }
+  .rst { font-size: 11px; font-family: 'Montserrat', sans-serif; color: #888780; border: 0.5px solid #ccc; background: transparent; padding: 5px 12px; border-radius: 8px; cursor: pointer; }
+  .rst:hover { background: #efefed; }
+  .container { max-width: 680px; margin: 0 auto; padding: 1.5rem 1rem 3rem; }
+  h1 { font-size: 17px; font-weight: 600; color: #1a1a18; margin-bottom: 3px; }
+  .sub { font-size: 11px; color: #888780; margin-bottom: 1.25rem; }
+  .legend { display: flex; gap: 10px; flex-wrap: wrap; margin-bottom: 1.25rem; }
+  .li { display: flex; align-items: center; gap: 4px; font-size: 10px; color: #888780; }
+  .sec { background: #fff; border: 0.5px solid #e0dfd8; border-radius: 12px; margin-bottom: 9px; overflow: hidden; }
+  .sec-hdr { display: flex; align-items: center; gap: 9px; padding: 11px 14px; cursor: pointer; user-select: none; }
+  .sec-hdr:hover { background: #f8f8f6; }
+  .sec-ico { font-size: 13px; width: 18px; text-align: center; flex-shrink: 0; }
+  .sec-ttl { font-size: 12px; font-weight: 600; flex: 1; color: #1a1a18; }
+  .sec-cnt { font-size: 10px; color: #888780; }
+  .chev { font-size: 9px; color: #aaa; transition: transform .2s; display: inline-block; }
+  .chev.open { transform: rotate(90deg); }
+  .sec-body { border-top: 0.5px solid #e0dfd8; }
+  .item { display: flex; align-items: flex-start; gap: 10px; padding: 9px 14px; border-bottom: 0.5px solid #e0dfd8; cursor: pointer; transition: background .1s; }
+  .item:last-child { border-bottom: none; }
+  .item:hover { background: #f8f8f6; }
+  .cb { width: 15px; height: 15px; border: 1.5px solid #ccc; border-radius: 3px; flex-shrink: 0; margin-top: 1px; display: flex; align-items: center; justify-content: center; transition: all .15s; }
+  .cb.on { background: #1D9E75; border-color: #1D9E75; }
+  .ck { display: none; color: #fff; font-size: 9px; font-weight: 700; line-height: 1; }
+  .cb.on .ck { display: block; }
+  .itxt { font-size: 12px; line-height: 1.55; flex: 1; color: #1a1a18; }
+  .itxt.done { color: #bbb; text-decoration: line-through; }
+  .tag { font-size: 9px; padding: 2px 6px; border-radius: 4px; font-weight: 600; flex-shrink: 0; margin-top: 2px; }
+  .tm { background: #FAECE7; color: #993C1D; }
+  .tu { background: #E6F1FB; color: #185FA5; }
+  .tt { background: #EEEDFE; color: #534AB7; }
+  .tf { background: #EAF3DE; color: #3B6D11; }
+  @media (prefers-color-scheme: dark) {
+    body { background: #1a1a18; color: #f0efe8; }
+    .sticky { background: rgba(26,26,24,0.95); border-bottom-color: #3a3a38; }
+    h1, .sec-ttl, .itxt { color: #f0efe8; }
+    .sec { background: #242422; border-color: #3a3a38; }
+    .sec-hdr:hover, .item:hover { background: #2e2e2c; }
+    .itxt.done { color: #555; }
+    .prog { background: #333; }
+    .rst { border-color: #444; color: #888; }
+    .rst:hover { background: #2e2e2c; }
+    .sec-body, .item { border-color: #3a3a38; }
+    .cb { border-color: #555; }
+    .tm { background: #3a1a10; color: #f0997b; }
+    .tu { background: #0d2a45; color: #85B7EB; }
+    .tt { background: #1e1a40; color: #AFA9EC; }
+    .tf { background: #162310; color: #97C459; }
+  }
+</style>
+</head>
+<body>
+<div class="sticky">
+  <div class="sticky-inner">
+    <div>
+      <div class="score-num" id="sn">0 / 0</div>
+      <div class="score-sub">виконано <span class="verdict" id="vd" style="background:#e8e8e5;color:#5F5E5A;">Не розпочато</span></div>
+    </div>
+    <div class="prog"><div class="prog-fill" id="pf" style="width:0%"></div></div>
+    <button class="rst" onclick="resetAll()">Скинути</button>
+  </div>
+</div>
+<div class="container">
+  <h1>Чекліст перевірки дизайну</h1>
+  <p class="sub">Для проєктних менеджерів перед передачею дизайну в розробку</p>
+  <div class="legend">
+    <div class="li"><span class="tag tm">критично</span> виправити до передачі</div>
+    <div class="li"><span class="tag tu">ux</span> досвід користувача</div>
+    <div class="li"><span class="tag tt">тех</span> потреби розробника</div>
+    <div class="li"><span class="tag tf">процес</span> документація</div>
+  </div>
+  <div id="secs"></div>
+</div>
+<script>
+const data=[{icon:"📋",title:"Специфікація та контекст",items:[{text:"Дизайн базується на письмовій специфікації — не зроблений навмання",tag:"tm"},{text:"Специфікація чітко формулює бізнес-цілі: що хочемо досягти, а не просто що побудувати",tag:"tm"},{text:"Цільові персони користувачів визначені та згадані у специфікації",tag:"tm"},{text:"Поточні метрики або дані про поведінку користувачів включені як базовий контекст",tag:"tf"},{text:"Надані конкурентні або референсні приклади як візуальні орієнтири для дизайнера",tag:"tu"}]},{icon:"🗂️",title:"Структура та організація у Figma",items:[{text:"Всі екрани чітко названі та організовані за розділами — не звалені в один фрейм",tag:"tm"},{text:"UI-kit / бібліотека компонентів присутня та використовується послідовно (кнопки, поля, кольори, типографіка)",tag:"tm"},{text:"Поп-апи, модалки та дропдауни розміщені на тих екранах, до яких належать — не «висять» окремо",tag:"tm"},{text:"Існує клікабельний прототип, що з'єднує основні екрани в логічному порядку",tag:"tt"},{text:"Екрани посилаються на розділ специфікації через нотатки, підписи або систему назв",tag:"tf"}]},{icon:"🔁",title:"Флоу користувача та стани екранів",items:[{text:"Існує діаграма флоу, що показує шлях від точки входу до досягнення мети",tag:"tm"},{text:"Кожен екран має визначені стани: дефолтний, завантаження, порожній, помилка, успіх",tag:"tm"},{text:"Порожні стани задизайнені — не залишені як білі екрани",tag:"tu"},{text:"Стани помилок показують зрозумілі повідомлення, а не просто «щось пішло не так»",tag:"tu"},{text:"Дропдауни, меню та інтерактивні елементи показані у відкритому та закритому стані",tag:"tt"},{text:"Показані всі стани кнопок та полів: активний, при наведенні, у фокусі, неактивний",tag:"tt"}]},{icon:"👤",title:"Ролі та права доступу",items:[{text:"Всі ролі користувачів визначені (наприклад: адмін, редактор, переглядач)",tag:"tm"},{text:"Екрани візуально відрізняються між ролями там, де доступ або функціонал відрізняється",tag:"tm"},{text:"Обмежені функції показані у вимкненому або прихованому стані — не просто відсутні",tag:"tu"}]},{icon:"🎨",title:"Візуальна послідовність",items:[{text:"Кольорова палітра відповідає брендбуку — немає кольорів «від себе»",tag:"tm"},{text:"Розміри та жирність шрифтів послідовні для схожих елементів",tag:"tu"},{text:"Відступи та вирівнювання послідовні — немає «плаваючих» елементів і розбитих сіток",tag:"tu"},{text:"Розміри та стилі кнопок послідовні — немає випадкових відхилень між екранами",tag:"tt"},{text:"Індикатори статусу відповідають конвенції: зелений = успіх, червоний = помилка, жовтий = увага",tag:"tu"}]},{icon:"📐",title:"Технічна готовність",items:[{text:"Вказані цільові розміри екранів та брейкпоінти: десктоп, планшет, мобільний",tag:"tm"},{text:"Нові іконки або зображення надані як асети або вказані джерела",tag:"tt"},{text:"Текстовий контент реальний, а не Lorem Ipsum — або довжина плейсхолдерів реалістична",tag:"tu"},{text:"Анімації та переходи описані, якщо поведінка не очевидна",tag:"tt"},{text:"Дизайн враховує крайні випадки: довгі імена, порожні поля, максимальна кількість символів",tag:"tt"}]},{icon:"✅",title:"Відповідальність дизайнера та передача",items:[{text:"Дизайнер сам користувався продуктом і може пройти його як реальний юзер",tag:"tm"},{text:"Дизайнер усно презентував та пояснив свої рішення — не просто скинув файл",tag:"tm"},{text:"ПМ перевірив дизайн відносно специфікації перед передачею в розробку",tag:"tm"},{text:"Принаймні один раунд зворотного зв'язку врахований до фінальної передачі",tag:"tf"},{text:"Розробник мав можливість вказати на технічні блокери до початку розробки",tag:"tt"}]}];
+const tl={tm:"критично",tu:"ux",tt:"тех",tf:"процес"};
+let ck={},op={};
+data.forEach((_,i)=>op[i]=i===0);
+function total(){return data.reduce((s,sec)=>s+sec.items.length,0)}
+function done(){return Object.values(ck).filter(Boolean).length}
+function updateScore(){
+  const t=total(),d=done(),pct=t?Math.round(d/t*100):0;
+  document.getElementById("sn").textContent=d+" / "+t;
+  document.getElementById("pf").style.width=pct+"%";
+  const v=document.getElementById("vd");
+  if(d===0){v.textContent="Не розпочато";v.style.background="#e8e8e5";v.style.color="#5F5E5A"}
+  else if(pct<50){v.textContent="Потребує роботи";v.style.background="#FAECE7";v.style.color="#993C1D"}
+  else if(pct<80){v.textContent="В процесі";v.style.background="#FAEEDA";v.style.color="#854F0B"}
+  else if(pct<100){v.textContent="Майже готово";v.style.background="#E1F5EE";v.style.color="#0F6E56"}
+  else{v.textContent="Готово до розробки";v.style.background="#EAF3DE";v.style.color="#3B6D11"}
+  render();
+}
+function toggle(k){ck[k]=!ck[k];updateScore()}
+function toggleSec(i){op[i]=!op[i];render()}
+function resetAll(){ck={};updateScore()}
+function render(){
+  const el=document.getElementById("secs");
+  el.innerHTML="";
+  data.forEach((sec,si)=>{
+    const d=sec.items.filter((_,ii)=>ck[si+"_"+ii]).length;
+    const isOpen=!!op[si];
+    const div=document.createElement("div");
+    div.className="sec";
+    div.innerHTML=`<div class="sec-hdr" onclick="toggleSec(${si})"><span class="sec-ico">${sec.icon}</span><span class="sec-ttl">${sec.title}</span><span class="sec-cnt">${d}/${sec.items.length}</span><span class="chev ${isOpen?'open':''}">▶</span></div>${isOpen?`<div class="sec-body">${sec.items.map((item,ii)=>{const key=si+"_"+ii,chk=!!ck[key];return`<div class="item" onclick="toggle('${key}')"><div class="cb ${chk?'on':''}"><span class="ck">✓</span></div><span class="itxt ${chk?'done':''}">${item.text}</span><span class="tag ${item.tag}">${tl[item.tag]}</span></div>`}).join("")}</div>`:""}`;
+    el.appendChild(div);
+  });
+}
+render();updateScore();
+</script>
+</body>
+</html>
